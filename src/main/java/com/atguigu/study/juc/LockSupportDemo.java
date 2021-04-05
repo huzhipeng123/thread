@@ -1,7 +1,9 @@
 package com.atguigu.study.juc;
 
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.LockSupport;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
@@ -22,7 +24,23 @@ public class LockSupportDemo {
 //        synchronizedWaitNotify();
 
 //        lockAwaitSingal();
+        Thread a = new Thread(() -> {
+            System.out.println(Thread.currentThread().getName()+"\t-----come in");
+            LockSupport.park();
+            System.out.println(Thread.currentThread().getName()+"\t-----被唤醒");
+        }, "a");
+        a.start();
 
+        try {
+            TimeUnit.SECONDS.sleep(3L);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        Thread b = new Thread(() -> {
+            LockSupport.unpark(a);
+            System.out.println(Thread.currentThread().getName()+"\t----通知");
+        }, "b");
+        b.start();
     }
 
     private static void lockAwaitSingal() {
